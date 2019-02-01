@@ -123,11 +123,11 @@ class AmazonAPI
 		return $this->mErrors;
 	}
 
-	private function AddError($error) {
+	protected function AddError($error) {
 		array_push($this->mErrors, $error);
 	}
 
-	private function MakeAndParseRequest($params) {
+	protected function MakeAndParseRequest($params) {
 		$signedUrl = $this->urlBuilder->generate($params);
 
 		try {
