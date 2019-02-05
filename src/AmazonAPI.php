@@ -61,7 +61,7 @@ class AmazonAPI
 		'Watches'
 	);
 
-	private $mErrors = array();
+	private $mErrors = [];
 
 	public function __construct($urlBuilder, $outputType) {
 		$this->urlBuilder = $urlBuilder;
@@ -83,14 +83,14 @@ class AmazonAPI
 	 * @return	mixed				SimpleXML object, array of data or false if failure.
 	 */
 	public function ItemSearch($keywords, $searchIndex = NULL, $sortBy = NULL, $condition = 'New') {
-		$params = array(
+		$params = [
 			'Operation' => 'ItemSearch',
 			'ResponseGroup' => 'ItemAttributes,Offers,Images',
 			'Keywords' => $keywords,
 			'Condition' => $condition,
 			'SearchIndex' => empty($searchIndex) ? 'All' : $searchIndex,
 			'Sort' => $sortBy && ($searchIndex != 'All') ? $sortBy : NULL
-		);
+		];
 
 		return $this->MakeAndParseRequest($params);
 	}
@@ -108,16 +108,43 @@ class AmazonAPI
 			$asinList = implode(',', $asinList);
 		}
 
-		$params = array(
+		$params = [
 			'Operation' => 'ItemLookup',
 			'ResponseGroup' => 'ItemAttributes,Offers,Reviews,Images,EditorialReview',
 			'ReviewSort' => '-OverallRating',
 			'ItemId' => $asinList,
 			'MerchantId' => ($onlyFromAmazon == true) ? 'Amazon' : 'All'
-		);
+		];
 
 		return $this->MakeAndParseRequest($params);
 	}
+
+
+    /**
+     * Get an Amazon cart object
+     *
+     * @param array $offerId an array of OfferListingId's from ItemLookup xml file (or similar); keys should be ints
+     * @param array $qty the quantity of each offer to add to cart
+     * @return array
+     */
+    public function createCart(array $offerId, array $qty)
+    {
+        if (!is_array($offerId) || !is_array($qty)) {
+            return null;
+        }
+
+        $params = [
+            'Operation' => 'CartCreate',
+        ];
+
+        foreach ($offerId as $key => $value)
+        {
+            $params['Item.' . $key . '.OfferListingId'] = $value;
+            $params['Item.' . $key . '.Quantity'] = $qty[$key];
+        }
+
+		return $this->MakeAndParseRequest($params);
+    }
 
 	public function GetErrors() {
 		return $this->mErrors;
@@ -143,6 +170,7 @@ class AmazonAPI
 			return $this->dataTransformer->execute($parsedXml);
 		} catch(\Exception $error) {
 			$this->AddError("Error downloading data : $signedUrl : " . $error->getMessage());
+
 			return false;
 		}
 	}
