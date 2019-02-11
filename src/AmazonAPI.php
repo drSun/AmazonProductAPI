@@ -15,6 +15,9 @@ use MarcL\Transformers\DataTransformerFactory;
 
 class AmazonAPI
 {
+    const OFFER_SEARCH_TYPE_ID = 'OfferListingId';
+    const OFFER_SEARCH_TYPE_ASIN = 'ASIN';
+
 	private $urlBuilder = NULL;
 	private $dataTransformer = NULL;
 
@@ -127,7 +130,7 @@ class AmazonAPI
      * @param array $qty the quantity of each offer to add to cart
      * @return array
      */
-    public function createCart(array $offerId, array $qty)
+    public function createCart(array $offerId, array $qty, $offerSearchType = self::OFFER_SEARCH_TYPE_ID)
     {
         if (!is_array($offerId) || !is_array($qty)) {
             return null;
