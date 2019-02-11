@@ -106,6 +106,7 @@ class AmazonUrlBuilder {
 	    // Create our new request
 	    foreach ($parameters as $parameter => $value) {
 	        // We need to be sure we properly encode the value of our parameter
+	        $parameter = str_replace("_", ".", $parameter);
 	        $parameter = str_replace("%7E", "~", rawurlencode($parameter));
 	        $value = str_replace("%7E", "~", rawurlencode($value));
 	        $requestArray[] = $parameter . '=' . $value;

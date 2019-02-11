@@ -142,7 +142,7 @@ class AmazonAPI
 
         foreach ($offerId as $key => $value)
         {
-            $params['Item.' . $key . '.OfferListingId'] = $value;
+            $params['Item.' . $key . '.' . $offerSearchType] = $value;
             $params['Item.' . $key . '.Quantity'] = $qty[$key];
         }
 
