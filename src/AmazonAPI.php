@@ -124,7 +124,7 @@ class AmazonAPI
 
 
     /**
-     * Get an Amazon cart object
+     * Create an Amazon cart object
      *
      * @param array $offerId an array of OfferListingId's from ItemLookup xml file (or similar); keys should be ints
      * @param array $qty the quantity of each offer to add to cart
@@ -145,6 +145,54 @@ class AmazonAPI
             $params['Item.' . $key . '.' . $offerSearchType] = $value;
             $params['Item.' . $key . '.Quantity'] = $qty[$key];
         }
+
+		return $this->MakeAndParseRequest($params);
+    }
+
+    /**
+     * Add position to an Amazon cart object
+     *
+     * @param string $cartId
+     * @param string $hmac
+     * @param array $offerId an array of OfferListingId's from ItemLookup xml file (or similar); keys should be ints
+     * @param array $qty the quantity of each offer to add to cart
+     * @return array
+     */
+    public function addToCart($cartId, $hmac, array $offerId, array $qty, $offerSearchType = self::OFFER_SEARCH_TYPE_ID)
+    {
+        if (!is_array($offerId) || !is_array($qty)) {
+            return null;
+        }
+
+        $params = [
+            'Operation' => 'CartAdd',
+            'CartId' => $cartId,
+            'HMAC' => $hmac,
+        ];
+
+        foreach ($offerId as $key => $value)
+        {
+            $params['Item.' . $key . '.' . $offerSearchType] = $value;
+            $params['Item.' . $key . '.Quantity'] = $qty[$key];
+        }
+
+		return $this->MakeAndParseRequest($params);
+    }
+
+    /**
+     * Get an Amazon cart object
+     *
+     * @param string $cartId
+     * @param string $hmac
+     * @return array
+     */
+    public function getCart($cartId, $hmac)
+    {
+        $params = [
+            'Operation' => 'CartGet',
+            'CartId' => $cartId,
+            'HMAC' => $hmac,
+        ];
 
 		return $this->MakeAndParseRequest($params);
     }
@@ -178,4 +226,3 @@ class AmazonAPI
 		}
 	}
 }
-?>

@@ -130,5 +130,3 @@ class AmazonUrlBuilder {
 		return $this->CreateSignedAwsRequest($unsignedRequest);
     }
 }
-
-?>
